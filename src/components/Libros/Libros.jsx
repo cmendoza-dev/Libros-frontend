@@ -8,6 +8,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import "./Libros.css";
 
 const Libros = () => {
+
+  // Configuración global de Axios
+  axios.defaults.headers.common['Content-Type'] = 'application/json';
+
   const [loanData, setLoanData] = useState([]);
   const [userData, setUserData] = useState({});
   const [bookData, setBookData] = useState({});
@@ -109,10 +113,12 @@ const Libros = () => {
   };
 
   const handleCreateLoan = async () => {
+    axios.defaults.headers.post['Content-Type'] = 'application/json'; // Agrega esta línea
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/libros/prestamos/",
-        newLoanData
+        JSON.stringify(newLoanData) // Convertir a cadena JSON
+        
       );
       setLoanData((prevLoanData) => [...prevLoanData, response.data]);
       handleCreateModalClose();
@@ -141,7 +147,13 @@ const Libros = () => {
     try {
       const response = await axios.put(
         `http://127.0.0.1:8000/libros/prestamos/${editLoanData.id}/`,
-        editLoanData
+        editLoanData,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+        
       );
       const updatedLoanData = loanData.map((loan) =>
         loan.id === response.data.id ? response.data : loan
@@ -178,7 +190,7 @@ const Libros = () => {
 
   return (
     <div className="mt-5 m-auto w-75">
-      <Button variant="primary" onClick={handleCreateModalOpen}>
+      <Button className="mb-4" variant="primary" onClick={handleCreateModalOpen}>
         Prestar Libro
       </Button>
 
